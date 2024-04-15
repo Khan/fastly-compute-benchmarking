@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/fastly/compute-sdk-go/fsthttp"
+	"github.com/valyala/fastjson"
 )
 
 // The entry point for your application.
@@ -14,6 +16,8 @@ import (
 // used to route based on the request properties (such as method or path), send
 // the request to a backend, make completely new requests, and/or generate
 // synthetic responses.
+
+const BackendName = "www_khanacademy_org"
 
 func main() {
 	// Log service version
@@ -69,9 +73,45 @@ func main() {
 			// fmt.Fprintln(endpoint, "Hello from the edge!")
 
 			// Send a default synthetic response.
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			// w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			// fmt.Fprintln(w, `<iframe src="https://developer.fastly.com/compute-welcome" style="border:0; position: absolute; top: 0; left: 0; width: 100%; height: 100%"></iframe>`)
 
-			fmt.Fprintln(w, `<iframe src="https://developer.fastly.com/compute-welcome" style="border:0; position: absolute; top: 0; left: 0; width: 100%; height: 100%"></iframe>`)
+			// Send the request to the named backend.
+			r.URL.Path = "/api/features/sdk-u16yaYPyqdZ0OHuZ"
+			resp, err := r.Send(ctx, BackendName)
+			if err != nil {
+				w.WriteHeader(fsthttp.StatusBadGateway)
+				fmt.Fprintln(w, err)
+				fmt.Println(err)
+				return
+			}
+
+			// Read the backend response body.
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				w.WriteHeader(fsthttp.StatusBadGateway)
+				fmt.Fprintln(w, err)
+				return
+			}
+
+			// Parse JSON response.
+			var p fastjson.Parser
+			v, err := p.ParseBytes(body)
+			if err != nil {
+				w.WriteHeader(fsthttp.StatusBadGateway)
+				fmt.Fprintln(w, err)
+				fmt.Println(err)
+				return
+			}
+
+			// TODO: Inject new JSON field.
+			v.Set("new_field", fastjson.MustParse(`"data injected at the edge"`))
+
+			// Write response to client.
+			w.Header().Reset(resp.Header)
+			w.WriteHeader(resp.StatusCode)
+			fmt.Fprintf(w, "%s\n", v.MarshalTo(nil))
+
 			return
 		}
 

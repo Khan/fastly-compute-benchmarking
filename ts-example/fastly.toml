@@ -12,3 +12,9 @@ service_id = ""
 [scripts]
   build = "npm run build"
   post_init = "npm install"
+
+[local_server]
+  [local_server.backends]
+    [local_server.backends.www_khanacademy_org]
+      url = "https://www.khanacademy.org"
+      override_host = "www.khanacademy.org"

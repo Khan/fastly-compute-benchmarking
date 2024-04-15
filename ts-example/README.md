@@ -6,6 +6,10 @@ Get to know the Fastly Compute environment with a basic starter that demonstrate
 
 **For more details about other starter kits for Compute, see the [Fastly Documentation Hub](https://www.fastly.com/documentation/solutions/starters)**
 
+## QuickStart
+
+- `fastly compute serve` to run the service locally
+
 ## Features
 * Allow only requests with particular HTTP methods
 * Match request URL path and methods for routing

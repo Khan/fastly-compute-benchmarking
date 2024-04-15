@@ -6,6 +6,11 @@ Get to know the Fastly Compute environment with a basic starter that demonstrate
 
 **For more details about other starter kits for Compute, see the [Fastly developer hub](https://developer.fastly.com/solutions/starters)**
 
+## QuickStart
+
+- Install `tinygo` globally using instructions from https://tinygo.org/getting-started/install/
+- `fastly compute serve` to run the service locally
+
 ## Features
 
 * Allow only requests with particular HTTP methods
